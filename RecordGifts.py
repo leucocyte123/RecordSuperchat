@@ -34,12 +34,14 @@ class MyBLiveClient(BLiveClient):
         self.log(f'{datetime.now()}: 醒目留言 ¥{message.price} {message.uname}：{message.message}')
 
     def log(self, s: str):
+        # print('\033[1;40m\033[1;34m%s\033[0m\033[0m' % s)
         print (s)
         with open(filename, 'a', encoding='utf-8') as f:
             f.write(s)
             f.write('\n')
 
 async def main():
+    room_id = input('请输入直播间ID：')
     client = MyBLiveClient(room_id, ssl=True)
     future = client.start()
     try:
