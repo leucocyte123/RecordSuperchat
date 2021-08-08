@@ -31,7 +31,7 @@ class MyBLiveClient(BLiveClient):
         self.log(f'{datetime.now()}: {message.username} 购买{message.gift_name}')
 
     async def _on_super_chat(self, message: SuperChatMessage):
-        self.log(f'{datetime.now()}: 醒目留言 ¥{message.price} {message.uname}：{message.message}')
+        self.log(f'{datetime.now()}: {message.uname} 醒目留言 ¥{message.price}：{message.message}')
 
     def log(self, s: str):
         # print('\033[1;40m\033[1;34m%s\033[0m\033[0m' % s)
