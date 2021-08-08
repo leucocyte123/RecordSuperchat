@@ -22,6 +22,8 @@ class MyBLiveClient(BLiveClient):
     _COMMAND_HANDLERS['ONLINE_RANK_COUNT'] = None
     _COMMAND_HANDLERS['ONLINE_RANK_V2'] = None
     _COMMAND_HANDLERS['HOT_RANK_CHANGED'] = None
+    _COMMAND_HANDLERS['ONLINE_RANK_TOP3'] = None
+    _COMMAND_HANDLERS['WIDGET_BANNER'] = None
 
     async def _on_receive_gift(self, gift: GiftMessage):
         if gift.coin_type == 'gold' and gift.total_coin > gift_threshold:
