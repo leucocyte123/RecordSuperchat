@@ -1,4 +1,4 @@
 virtualenv.exe compile
 compile/Scripts/activate
-pip install aiohttp
-pyinstaller.exe -F RecordGifts.py
+pip install aiohttp xpinyin
+pyinstaller.exe -F RecordSuperchat.py

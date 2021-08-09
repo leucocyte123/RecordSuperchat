@@ -6,7 +6,7 @@ from datetime import datetime
 import asyncio
 from xpinyin import Pinyin
 
-from blivedm.blivedm import BLiveClient, GiftMessage, GuardBuyMessage, SuperChatMessage
+from blivedm.blivedm import BLiveClient, GiftMessage, GuardBuyMessage, SuperChatMessage, DanmakuMessage
 
 VtuberOfInterest = {
     'xuehusang': 24393,
@@ -18,15 +18,14 @@ room_id = VtuberOfInterest[selected_vtuber]
 
 gift_threshold = 0
 filename = 'log.txt'
+pinyin_data_path = 'Mandarin.dat'
+pinyin = Pinyin(pinyin_data_path)
 
 class MyBLiveClient(BLiveClient):
-    _COMMAND_HANDLERS = BLiveClient._COMMAND_HANDLERS.copy()
-    _COMMAND_HANDLERS['STOP_LIVE_ROOM_LIST'] = None
-    _COMMAND_HANDLERS['ONLINE_RANK_COUNT'] = None
-    _COMMAND_HANDLERS['ONLINE_RANK_V2'] = None
-    _COMMAND_HANDLERS['HOT_RANK_CHANGED'] = None
-    _COMMAND_HANDLERS['ONLINE_RANK_TOP3'] = None
-    _COMMAND_HANDLERS['WIDGET_BANNER'] = None
+    # async def _on_receive_danmaku(self, danmaku: DanmakuMessage):
+    #     username = danmaku.uname
+    #     username_pinyin = re.sub("-", " ", pinyin.get_pinyin(danmaku.uname, tone_marks='marks'))
+    #     print(f'{username}（{username_pinyin}）')
 
     async def _on_super_chat(self, message: SuperChatMessage):
         timestamp = datetime.now()
@@ -57,8 +56,4 @@ async def main():
         await client.close()
 
 if __name__ == '__main__':
-    # Disable logger output
-    logger = logging.getLogger(__name__)
-    logger.propagate = False
-
     asyncio.get_event_loop().run_until_complete(main())
