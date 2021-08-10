@@ -18,8 +18,8 @@ room_id = VtuberOfInterest[selected_vtuber]
 
 gift_threshold = 0
 filename = 'log.txt'
-pinyin_data_path = 'Mandarin.dat'
-pinyin = Pinyin(pinyin_data_path)
+# pinyin_data_path = 'Mandarin.dat'
+# pinyin = Pinyin(pinyin_data_path)
 
 class MyBLiveClient(BLiveClient):
     # async def _on_receive_danmaku(self, danmaku: DanmakuMessage):
