@@ -4,9 +4,9 @@ import logging
 from datetime import datetime
 
 import asyncio
-from xpinyin import Pinyin
+# from xpinyin import Pinyin
 
-from blivedm.blivedm import BLiveClient, GiftMessage, GuardBuyMessage, SuperChatMessage, DanmakuMessage
+from blivedm.blivedm import BLiveClient, SuperChatMessage
 
 VtuberOfInterest = {
     'xuehusang': 24393,
@@ -30,9 +30,10 @@ class MyBLiveClient(BLiveClient):
     async def _on_super_chat(self, message: SuperChatMessage):
         timestamp = datetime.now()
         username = message.uname
-        username_pinyin = re.sub("-", " ", Pinyin().get_pinyin(message.uname, tone_marks='marks'))
+        # username_pinyin = re.sub("-", " ", Pinyin().get_pinyin(message.uname, tone_marks='marks'))
         content = message.message
-        self.log(f'{timestamp}: 醒目留言 ¥{message.price}\n{username}（{username_pinyin}）\n{content}\n')
+        self.log(f'{timestamp}: 醒目留言 ¥{message.price}\n{username}\n{content}\n')
+        # self.log(f'{timestamp}: 醒目留言 ¥{message.price}\n{username}（{username_pinyin}）\n{content}\n')
 
     def log(self, s: str):
         # print('\033[1;40m\033[1;34m%s\033[0m\033[0m' % s)
