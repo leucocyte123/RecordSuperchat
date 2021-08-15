@@ -2,6 +2,7 @@
 import re
 import getpass
 
+import mysql
 import asyncio
 from xpinyin import Pinyin
 
@@ -35,11 +36,24 @@ def parseMessage(message: SuperChatMessage):
     price = message.price
     return uname, uname_pinyin, uid, content, price
 
+def writeMySQL(val):
+    mydb = mysql.connector.connect(
+        host=mysqlHost,
+        user=mysqlUsername,
+        password=mysqlPassword,
+        database=selected_vtuber
+    )
+    mycursor = mydb.cursor()
+
+    sql = "INSERT INTO messages (uname, pinyin, uid, message, price) VALUES (%s, %s, %s, %s, %s)"
+
+    mycursor.execute(sql, val)
+    mydb.commit()
+
 class MyBLiveClient(BLiveClient):
     async def _on_super_chat(self, message: SuperChatMessage):
-        username = message.uname
-        username_pinyin = re.sub("-", " ", pinyin.get_pinyin(message.uname, tone_marks='marks'))
-        content = message.message
+        val = parseMessage(message)
+        writeMySQL(val)
 
 async def main():
     client = MyBLiveClient(room_id, ssl=True)
@@ -50,4 +64,5 @@ async def main():
         await client.close()
 
 if __name__ == '__main__':
+    inputMysqlPassword()
     asyncio.get_event_loop().run_until_complete(main())
