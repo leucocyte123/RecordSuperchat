@@ -2,7 +2,7 @@
 import re
 import getpass
 
-import mysql
+import mysql.connector
 import asyncio
 from xpinyin import Pinyin
 
@@ -45,7 +45,7 @@ def writeMySQL(val):
     )
     mycursor = mydb.cursor()
 
-    sql = "INSERT INTO messages (uname, pinyin, uid, message, price) VALUES (%s, %s, %s, %s, %s)"
+    sql = "INSERT INTO superchats (uname, pinyin, uid, message, price) VALUES (%s, %s, %s, %s, %s)"
 
     mycursor.execute(sql, val)
     mydb.commit()
