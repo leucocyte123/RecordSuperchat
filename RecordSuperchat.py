@@ -6,14 +6,14 @@ import mysql.connector
 import asyncio
 from xpinyin import Pinyin
 
-from blivedm.blivedm import BLiveClient, SuperChatMessage
+from blivedm.blivedm import BLiveClient, SuperChatMessage, GiftMessage, GuardBuyMessage
 
 VtuberOfInterest = {
     'xuehusang': 24393,
     'kitzuki': 22889484,
 }
 
-selected_vtuber = 'kitzuki'
+selected_vtuber = 'xuehusang'
 room_id = VtuberOfInterest[selected_vtuber]
 
 mysqlHost = '172.17.0.4'
@@ -21,14 +21,39 @@ mysqlUsername = 'root'
 mysqlPassword = ''
 
 gift_threshold = 0
-filename = 'log.txt'
 pinyin = Pinyin()
 
 def inputMysqlPassword():
     global mysqlPassword
     mysqlPassword = getpass.getpass(prompt='MySQL Password: ')
 
-def parseMessage(message: SuperChatMessage):
+def parseMessageGift(message: GiftMessage):
+    uname = message.uname
+    uname_pinyin = re.sub("-", " ", pinyin.get_pinyin(message.uname, tone_marks='marks'))
+    uid = message.uid
+    content = "%s x %d" % (message.gift_name, message.num)
+    price = int(message.total_coin / 100)
+    return uname, uname_pinyin, uid, content, price
+
+def parseMessageGuard(message: GuardBuyMessage):
+    def guard_level_to_name(guard_level):
+        if guard_level == 1:
+            return '总督'
+        elif guard_level == 2:
+            return '提督'
+        elif guard_level == 3:
+            return '舰长'
+        else:
+            return '非舰队'
+
+    uname = message.uname
+    uname_pinyin = re.sub("-", " ", pinyin.get_pinyin(message.uname, tone_marks='marks'))
+    uid = message.uid
+    content = "%s x %d" % (guard_level_to_name(message.guard_level), message.num)
+    price = int(message.price * message.num / 100)
+    return uname, uname_pinyin, uid, content, price
+
+def parseMessageSuperchat(message: SuperChatMessage):
     uname = message.uname
     uname_pinyin = re.sub("-", " ", pinyin.get_pinyin(message.uname, tone_marks='marks'))
     uid = message.uid
@@ -51,8 +76,18 @@ def writeMySQL(val):
     mydb.commit()
 
 class MyBLiveClient(BLiveClient):
-    async def _on_super_chat(self, message: SuperChatMessage):
-        val = parseMessage(message)
+    async def _on_receive_gift(self, gift: GiftMessage):
+        if gift.coin_type != 'gold':
+            return
+        val = parseMessageGift(gift)
+        writeMySQL(val)
+
+    async def _on_buy_guard(self, guard: GuardBuyMessage):
+        val = parseMessageGuard(guard)
+        writeMySQL(val)
+
+    async def _on_super_chat(self, superchat: SuperChatMessage):
+        val = parseMessageSuperchat(superchat)
         writeMySQL(val)
 
 async def main():
